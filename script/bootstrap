@@ -1,10 +1,26 @@
 #!/usr/bin/env bash
 
-function main {
+function bootstrap {
   local shome="$(cd -P -- "${BASH_SOURCE%/*}/.." && pwd -P)"
   source "$shome/script/profile"
 
-  uname -a
+  local url_drone_Darwin="https://github.com/drone/drone-cli/releases/download/v${DRONE_VERSION}/drone_darwin_amd64.tar.gz"
+  local url_drone_Linux="https://github.com/drone/drone-cli/releases/download/v${DRONE_VERSION}/drone_linux_amd64.tar.gz "
+
+  local url_drone="url_drone_$(uname -s)"
+  local fnm_drone="$(basename "${!url_drone}")-${DRONE_VERSION}"
+  cache curl "$fnm_drone" "${!url_drone}"
+
+  mkdir -p "$shome/vendor"
+  pushd "$shome/vendor"
+  tar xfz "${BASEBOX_CACHE}/curl/$fnm_drone"
+  mv drone "drone-${DRONE_VERSION}"
+  popd
+
+  mkdir -p "$shome/bin"
+  pushd "$shome/bin"
+  ln -nfs "../vendor/drone-${DRONE_VERSION}" "$shome/bin/drone"
+  popd
 }
 
-main "$@"
+bootstrap

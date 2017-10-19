@@ -4,7 +4,7 @@ function version {
   local shome="$(cd -P -- "${BASH_SOURCE%/*}/.." && pwd -P)"
   source "$shome/script/profile"
 
-  local ver_drone="0.0.1"
+  local ver_drone="$(drone -v 2>/dev/null | awk '{print $3}' || true)"
   jq -n --arg drone "$ver_drone" '{drone: $drone}'
 }
 

@@ -1,0 +1,5 @@
+curl \
+  -X POST --data @payload.json \
+  -H "Content-Type: application/json" \
+  -H "X-GitHub-Event: push" \
+  "http://169.254.1.1:8000/$(curl -s 'https://api.github.com/repos/imma/ubuntu/hooks?access_token=xxx' | jq -r '.[].config.url' | cut -d/ -f4-)"
